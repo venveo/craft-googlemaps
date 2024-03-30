@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Added a null check when compiling search keywords. ([#108](https://github.com/doublesecretagency/craft-googlemaps/issues/108))
+
 ## 4.5.0 - 2024-03-21
 
 ### Added

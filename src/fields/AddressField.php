@@ -593,6 +593,11 @@ class AddressField extends Field implements PreviewableFieldInterface
      */
     public function getSearchKeywords(mixed $value, ElementInterface $element): string
     {
+        // If no value, bail with empty string
+        if (!$value) {
+            return '';
+        }
+
         /** @var AddressModel $value */
         return implode(' ', [
             $value->formatted,
