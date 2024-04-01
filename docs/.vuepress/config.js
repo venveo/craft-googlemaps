@@ -116,6 +116,7 @@ module.exports = {
                 'graphql',
                 'front-end-form',
                 'export',
+                'event',
             ],
             '/dynamic-maps/': [
                 {

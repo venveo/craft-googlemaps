@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+- Added an [event](https://plugins.doublesecretagency.com/google-maps/address-field/event/) for plugins/modules to define search keywords. ([#108](https://github.com/doublesecretagency/craft-googlemaps/issues/108))
+
 ### Fixed
 - Added a null check when compiling search keywords. ([#108](https://github.com/doublesecretagency/craft-googlemaps/issues/108))
 

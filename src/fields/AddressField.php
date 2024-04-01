@@ -17,6 +17,7 @@ use craft\base\Field;
 use craft\base\PreviewableFieldInterface;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\Entry;
+use craft\events\DefineFieldKeywordsEvent;
 use craft\helpers\Json;
 use doublesecretagency\googlemaps\enums\Defaults;
 use doublesecretagency\googlemaps\GoogleMapsPlugin;
@@ -593,12 +594,25 @@ class AddressField extends Field implements PreviewableFieldInterface
      */
     public function getSearchKeywords(mixed $value, ElementInterface $element): string
     {
-        // If no value, bail with empty string
-        if (!$value) {
+        // If no value or not an Address
+        if (!$value || !is_a($value, AddressModel::class)) {
+            // Bail with empty string
             return '';
         }
 
-        /** @var AddressModel $value */
+        // Give plugins/modules a chance to define custom keywords
+        if ($this->hasEventHandlers(self::EVENT_DEFINE_KEYWORDS)) {
+            $event = new DefineFieldKeywordsEvent([
+                'value' => $value,
+                'element' => $element,
+            ]);
+            $this->trigger(self::EVENT_DEFINE_KEYWORDS, $event);
+            if ($event->handled) {
+                return $event->keywords;
+            }
+        }
+
+        // Return default keywords
         return implode(' ', [
             $value->formatted,
             $value->name,
