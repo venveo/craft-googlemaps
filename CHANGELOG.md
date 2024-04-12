@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.5.2 - 2024-04-12
 
 ### Fixed
 - Patched bug caused by malformed subfield config.
