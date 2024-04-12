@@ -560,10 +560,13 @@ class AddressField extends Field implements PreviewableFieldInterface
 
         // Loop through subfield configuration
         foreach ($subfieldConfig as $subfield) {
-            // If the subfield is enabled
-            if ($subfield['enabled'] ?? false) {
+            // Get subfield details
+            $enabled = ($subfield['enabled'] ?? false);
+            $handle  = ($subfield['handle']  ?? false);
+            // If the subfield is enabled with a valid handle
+            if ($enabled && $handle) {
                 // Append to array of handles
-                $handles[] = $subfield['handle'];
+                $handles[] = $handle;
             }
         }
 
