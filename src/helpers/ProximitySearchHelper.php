@@ -48,6 +48,7 @@ class ProximitySearchHelper
      * @param ElementQueryInterface $query
      * @param array $options
      * @param AddressField $field
+     * @throws HttpException
      */
     public static function modifyElementsQuery(ElementQueryInterface $query, array $options, AddressField $field): void
     {
@@ -59,7 +60,7 @@ class ProximitySearchHelper
         // Join with plugin table
         static::$_query->subQuery->leftJoin(
             '{{%googlemaps_addresses}} addresses',
-            '[[addresses.elementId]] = [[elements.id]] AND [[addresses.fieldId]] = :fieldId',
+            '[[addresses.elementId]] = [[elements.id]] AND [[addresses.siteId]] = [[elements_sites.siteId]] AND [[addresses.fieldId]] = :fieldId',
             [':fieldId' => $field->id]
         );
 
@@ -89,6 +90,7 @@ class ProximitySearchHelper
      * Conduct a target-based proximity search.
      *
      * @param array $options
+     * @throws HttpException
      */
     private static function _applyProximitySearch(array $options): void
     {

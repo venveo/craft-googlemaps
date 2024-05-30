@@ -13,6 +13,7 @@ namespace doublesecretagency\googlemaps\migrations;
 
 use Craft;
 use craft\db\Migration;
+use craft\db\Table;
 
 /**
  * FromScratch Migration
@@ -38,7 +39,7 @@ class FromScratch
 
         // If the table already exists, move on
         // (gracefully recover from a previous failed migration attempt)
-        if (static::$_migration->db->tableExists('{{%googlemaps_addresses}}')) {
+        if (static::$_migration->db->tableExists(Install::GM_ADDRESSES)) {
             $message = "The `googlemaps_addresses` table already exists. We may be recovering from a previously failed migration, migrated data will be appended to any existing data.";
             Craft::warning($message, __METHOD__);
             return;
@@ -55,9 +56,10 @@ class FromScratch
      */
     private static function _createTables(): void
     {
-        static::$_migration->createTable('{{%googlemaps_addresses}}', [
+        static::$_migration->createTable(Install::GM_ADDRESSES, [
             'id'           => static::$_migration->primaryKey(),
             'elementId'    => static::$_migration->integer()->notNull(),
+            'siteId'       => static::$_migration->integer()->notNull(),
             'fieldId'      => static::$_migration->integer()->notNull(),
             'formatted'    => static::$_migration->string(),
             'raw'          => static::$_migration->text(),
@@ -86,8 +88,14 @@ class FromScratch
      */
     private static function _createIndexes(): void
     {
-        static::$_migration->createIndex(null, '{{%googlemaps_addresses}}', ['elementId']);
-        static::$_migration->createIndex(null, '{{%googlemaps_addresses}}', ['fieldId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['elementId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['siteId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['fieldId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['siteId', 'fieldId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['elementId', 'siteId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['elementId', 'fieldId']);
+        static::$_migration->createIndex(null, Install::GM_ADDRESSES, ['elementId', 'siteId', 'fieldId'], true);
+
     }
 
     /**
@@ -95,8 +103,9 @@ class FromScratch
      */
     private static function _addForeignKeys(): void
     {
-        static::$_migration->addForeignKey(null, '{{%googlemaps_addresses}}', ['elementId'], '{{%elements}}', ['id'], 'CASCADE');
-        static::$_migration->addForeignKey(null, '{{%googlemaps_addresses}}', ['fieldId'],   '{{%fields}}',   ['id'], 'CASCADE');
+        static::$_migration->addForeignKey(null, Install::GM_ADDRESSES, ['elementId'], Table::ELEMENTS, ['id'], 'CASCADE');
+        static::$_migration->addForeignKey(null, Install::GM_ADDRESSES, ['siteId'],    Table::SITES,    ['id'], 'CASCADE');
+        static::$_migration->addForeignKey(null, Install::GM_ADDRESSES, ['fieldId'],   Table::FIELDS,   ['id'], 'CASCADE');
     }
 
 }

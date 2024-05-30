@@ -166,7 +166,7 @@ class FromSmartMap
         // Get all existing Smart Map data
         $rows = (new Query())
             ->select('*')
-            ->from('{{%smartmap_addresses}}')
+            ->from(Install::SM_ADDRESSES)
             ->orderBy('[[id]]')
             ->all();
 

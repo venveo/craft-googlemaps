@@ -114,6 +114,7 @@ module.exports = {
                 'settings',
                 'twig',
                 'graphql',
+                'multisite-support',
                 'front-end-form',
                 'export',
                 'event',

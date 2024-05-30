@@ -21,6 +21,16 @@ class Install extends Migration
 {
 
     /**
+     * Table for storing Address (Google Maps) data.
+     */
+    public const GM_ADDRESSES = '{{%googlemaps_addresses}}';
+
+    /**
+     * [LEGACY] Table for storing Address (Smart Map) data.
+     */
+    public const SM_ADDRESSES = '{{%smartmap_addresses}}';
+
+    /**
      * @inheritdoc
      */
     public function safeUp(): void
@@ -29,7 +39,7 @@ class Install extends Migration
         FromScratch::update($this);
 
         // If the `smartmap_addresses` table does not exist, bail
-        if (!$this->db->tableExists('{{%smartmap_addresses}}')) {
+        if (!$this->db->tableExists(static::SM_ADDRESSES)) {
             return;
         }
 
@@ -37,7 +47,7 @@ class Install extends Migration
         FromSmartMap::update();
 
         // Drop the old table if Smart Map couldn't do it
-        $this->dropTableIfExists('{{%smartmap_addresses}}');
+        $this->dropTableIfExists(static::SM_ADDRESSES);
     }
 
     /**
@@ -45,7 +55,7 @@ class Install extends Migration
      */
     public function safeDown(): void
     {
-        $this->dropTableIfExists('{{%googlemaps_addresses}}');
+        $this->dropTableIfExists(static::GM_ADDRESSES);
     }
 
 }

@@ -63,7 +63,7 @@ class GoogleMapsPlugin extends Plugin
     /**
      * @var string Current schema version of the plugin.
      */
-    public string $schemaVersion = '4.5.0';
+    public string $schemaVersion = '4.6.0';
 
     /**
      * @var GoogleMapsPlugin Self-referential plugin property.
@@ -261,7 +261,7 @@ class GoogleMapsPlugin extends Plugin
 
                 // List of columns to copy between tables
                 $columns = [
-                    'elementId', 'fieldId',
+                    'elementId', 'siteId', 'fieldId',
                     'formatted', 'raw',
                     'name', 'street1', 'street2',
                     'city', 'state', 'zip',

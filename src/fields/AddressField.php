@@ -127,6 +127,20 @@ class AddressField extends Field implements PreviewableFieldInterface
         return false;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public static function supportedTranslationMethods(): array
+    {
+        return [
+            self::TRANSLATION_METHOD_NONE,
+            self::TRANSLATION_METHOD_SITE,
+            self::TRANSLATION_METHOD_SITE_GROUP,
+            self::TRANSLATION_METHOD_LANGUAGE,
+            self::TRANSLATION_METHOD_CUSTOM,
+        ];
+    }
+
     // ========================================================================= //
 
     /**
@@ -146,9 +160,19 @@ class AddressField extends Field implements PreviewableFieldInterface
             return;
         }
 
+        // Get site ID
+        if (!Craft::$app->getIsMultiSite()) {
+            // Use the primary site ID
+            $siteId = Craft::$app->getSites()->getPrimarySite()->id;
+        } else {
+            // Use the current site ID
+            $siteId = $element->getSite()->id;
+        }
+
         // Attempt to load an existing record
         $record = AddressRecord::findOne([
             'elementId' => $element->id,
+            'siteId'    => $siteId,
             'fieldId'   => $this->id,
         ]);
 
@@ -156,6 +180,7 @@ class AddressField extends Field implements PreviewableFieldInterface
         if (!$record) {
             $record = new AddressRecord([
                 'elementId' => $element->id,
+                'siteId'    => $siteId,
                 'fieldId'   => $this->id,
             ]);
         }
@@ -200,14 +225,18 @@ class AddressField extends Field implements PreviewableFieldInterface
 
         // If value is an array, load it directly into an Address model
         if (is_array($value)) {
+            // Get IDs
+            $elementId = ($value['elementId'] ?? $element->id ?? null);
+            $fieldId   = ($value['fieldId']   ?? $this->id    ?? null);
             // Get coordinates
             $lat  = ($value['lat']  ?? null);
             $lng  = ($value['lng']  ?? null);
             $zoom = ($value['zoom'] ?? null);
             // Return Address model
             return new AddressModel([
-                'elementId'    => (int) ($element->id ?? null),
-                'fieldId'      => (int) ($this->id    ?? null),
+                'elementId'    => (int) $elementId,
+                'siteId'       => (int) ($value['siteId'] ?? null),
+                'fieldId'      => (int) $fieldId,
                 'formatted'    => ($value['formatted']    ?? null),
                 'raw'          => ($value['raw']          ?? null),
                 'name'         => ($value['name']         ?? null),
@@ -233,9 +262,19 @@ class AddressField extends Field implements PreviewableFieldInterface
             return null;
         }
 
+        // Get site ID
+        if (!Craft::$app->getIsMultiSite()) {
+            // Use the primary site ID
+            $siteId = Craft::$app->getSites()->getPrimarySite()->id;
+        } else {
+            // Use the current site ID
+            $siteId = $element->getSite()->id;
+        }
+
         // Attempt to load existing record
         $record = AddressRecord::findOne([
             'elementId' => $element->id,
+            'siteId' => $siteId,
             'fieldId' => $this->id,
         ]);
 
@@ -294,10 +333,10 @@ class AddressField extends Field implements PreviewableFieldInterface
     /**
      * @inheritdoc
      */
-    public function getInputHtml(mixed $address, ?ElementInterface $element = null): string
+    public function getInputHtml(mixed $value, ?ElementInterface $element = null): string
     {
         // Whether the field has existing coordinates
-        $coordsExist = ($address instanceof AddressModel && $address->hasCoords());
+        $coordsExist = ($value instanceof AddressModel && $value->hasCoords());
 
         // Get extended settings
         $settings = $this->_getExtraSettings();
@@ -323,7 +362,7 @@ class AddressField extends Field implements PreviewableFieldInterface
                     'handle' => $this->handle,
                 ],
                 'settings' => $settings,
-                'data' => $this->_getAddressData($address),
+                'data' => $this->_getAddressData($value),
                 'images' => $this->_publishImages([
                     'iconOn' => 'marker.svg',
                     'iconOff' => 'marker-hollow.svg',
