@@ -104,6 +104,9 @@ class ProximitySearchHelper
         // Get specified target
         $target = ($options['target'] ?? null);
 
+        // Get request precision
+        $precision = ((int)$options['precision'] ?? null);
+
         // If no target is specified
         if (!$target) {
             // Modify subquery, append empty distance column
@@ -150,6 +153,14 @@ class ProximitySearchHelper
         static::$_query->subQuery->addSelect(
             "{$haversine} AS [[distance]]"
         );
+
+        // If a precision option is present, add distanceGroup
+        if ($precision) {
+            $groupFactor = "FLOOR({$haversine} / ${precision})";
+            static::$_query->subQuery->addSelect(
+                "{$groupFactor} AS [[distanceGroup]]"
+            );
+        }
 
         // Briefly store the distance under the field handle
         $fieldHandle = static::$_field->handle;
