@@ -105,7 +105,10 @@ class ProximitySearchHelper
         $target = ($options['target'] ?? null);
 
         // Get request precision
-        $precision = ((int)$options['precision'] ?? null);
+        $precision = ($options['precision'] ?? null);
+        if ($precision) {
+            $precision = (int)$precision;
+        }
 
         // If no target is specified
         if (!$target) {
